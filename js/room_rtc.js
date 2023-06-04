@@ -24,7 +24,7 @@ if (!roomId) {
   roomId = "main";
 }
 
-let displayName = localStorage.getItem("display_name");
+let displayName = sessionStorage.getItem("display_name");
 if (!displayName) {
   window.location = "lobby.html";
 }
