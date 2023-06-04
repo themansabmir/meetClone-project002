@@ -2,9 +2,12 @@ let handleMemberJoined = async (MemberId) => {
   console.log("joined");
   addMemberToDom(MemberId);
 
-    let members = await channel.getMembers();
-    console.log(members)
+  let members = await channel.getMembers();
+  console.log(members);
   updateMemberTotal(members);
+  let { name } = await rtmClient.getUserAttributesByKeys(MemberId, ["name"]);
+
+  addBotMessageToDom(`Welcome to the room${name}`);
 };
 
 let addMemberToDom = async (MemberId) => {
@@ -47,9 +50,9 @@ let handleChannelMessage = async (messageData, MemberId) => {
   console.log("received");
 
   let data = JSON.parse(messageData.text);
-    if (data.type === 'chat') {
-    addMessageToDom(data.displayName, data.message)
-}
+  if (data.type === "chat") {
+    addMessageToDom(data.displayName, data.message);
+  }
 };
 let sendMessage = async (e) => {
   e.preventDefault();
@@ -72,6 +75,27 @@ let addMessageToDom = (name, message) => {
                         <div class="message__body">
                             <strong class="message__author">${name}</strong>
                             <p class="message__text">${message}</p>
+                        </div>
+                    </div>`;
+
+  messagesWrapper.insertAdjacentHTML("beforeend", newMessage);
+  let lastMessage = document.querySelector(
+    "#messages .message__wrapper:last-child"
+  );
+
+  if (lastMessage) {
+    lastMessage.scrollIntoView();
+  }
+};
+
+let addBotMessageToDom = (botMessage) => {
+  let messagesWrapper = document.getElementById("messages");
+  let newMessage = `
+                    <div id="messages">
+                    <div class="message__wrapper">
+                        <div class="message__body__bot">
+                            <strong class="message__author__bot">🤖 Mumble Bot</strong>
+                            <p class="message__text__bot">${botMessage}</p>
                         </div>
                     </div>`;
 
