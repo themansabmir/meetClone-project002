@@ -2,12 +2,13 @@ let handleMemberJoined = async (MemberId) => {
   console.log("joined");
   addMemberToDom(MemberId);
 
-  let members = await channel.getMembers();
+    let members = await channel.getMembers();
+    console.log(members)
   updateMemberTotal(members);
 };
 
 let addMemberToDom = async (MemberId) => {
-  let { name } = await rtmClient.getUserAttributeByKeys(MemberId, ["name"]);
+  let { name } = await rtmClient.getUserAttributesByKeys(MemberId, ["name"]);
 
   let membersWrapper = document.getElementById("member__list");
 
@@ -19,7 +20,7 @@ let addMemberToDom = async (MemberId) => {
   membersWrapper.insertAdjacentHTML("beforeend", memberItem);
 };
 
-let updateMemberTotal = async () => {
+let updateMemberTotal = async (members) => {
   let total = document.getElementById("members__count");
   total.innerText = members.length;
 };
@@ -46,7 +47,9 @@ let handleChannelMessage = async (messageData, MemberId) => {
   console.log("received");
 
   let data = JSON.parse(messageData.text);
-  console.log(data);
+    if (data.type === 'chat') {
+    addMessageToDom(data.displayName, data.message)
+}
 };
 let sendMessage = async (e) => {
   e.preventDefault();
@@ -64,7 +67,7 @@ let sendMessage = async (e) => {
 };
 
 let addMessageToDom = (name, message) => {
-  let messagesWrapper = docmuent.getElementById("messages");
+  let messagesWrapper = document.getElementById("messages");
   let newMessage = ` <div class="message__wrapper">
                         <div class="message__body">
                             <strong class="message__author">${name}</strong>
@@ -78,7 +81,7 @@ let addMessageToDom = (name, message) => {
   );
 
   if (lastMessage) {
-    lastMessage.scrollIntoView(); 
+    lastMessage.scrollIntoView();
   }
 };
 
